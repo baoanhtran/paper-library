@@ -1,0 +1,29 @@
+# Secrets and local settings
+.env
+
+# Local data: database, converted Markdown, local test output
+data/
+*.db
+*.sqlite3
+
+# Papers live in Google Drive, never in the repo
+*.pdf
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+
+# Airflow files, in case AIRFLOW_HOME ever points inside the repo
+logs/
+airflow.cfg
+airflow.db
+simple_auth_manager_passwords.json.generated
+
+# Editors and OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
