@@ -79,7 +79,7 @@ Owns `dags/paper_pipeline.py`, `dags/paper_lib/config.py`, the shared repo files
 
 - [x] Create the GitHub repo with the full skeleton (§7): folders, `requirements.txt` with every dependency (B's and C's included), `.gitignore`, `.env.example` with every setting from §6, the README headings (§9) and a stub for every function in §6 that returns fake data.
 - [ ] Invite B and C to the repo.
-- [ ] Check that the group is registered on UV ("Groups for Assignment 3").
+- [x] Check that the group is registered on UV ("Groups for Assignment 3").
 - [ ] Set up the demo machine (§8):
   - [x] Airflow 3.3.2 standalone in WSL2 (`~/venvs/airflow`, `AIRFLOW_HOME=~/airflow`)
   - [x] Ollama 0.40 as a systemd service; `qwen2.5:7b` runs 100% on the GPU
