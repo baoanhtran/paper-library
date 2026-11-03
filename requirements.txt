@@ -1,0 +1,11 @@
+# Libraries used by the pipeline modules and the tests. Python 3.11+ (pymupdf4llm needs it).
+# Versions match the Airflow 3.3.2 constraints file wherever the package appears in it.
+#
+# Airflow itself is installed separately, only on the demo machine (README, "Setup"):
+#   pip install "apache-airflow==3.3.2" \
+#     --constraint "https://raw.githubusercontent.com/apache/airflow/constraints-3.3.2/constraints-3.12.txt"
+pymupdf4llm==2.1
+openai==2.54.0
+requests==2.34.2
+python-dotenv==1.2.3
+pytest==9.2.0
