@@ -103,3 +103,4 @@ _TODO (C)_
 - **No Discord message:** `DISCORD_WEBHOOK_URL` is empty; `notify_discord` is then skipped and says so in its log.
 - **Everything is slow:** keep the repo and the virtualenv in the Linux file system (`~/`), not under `/mnt/c`.
 - **No runs for hours:** the PC went to sleep. Scheduled runs need the machine awake.
+- **A new PDF is picked up later than expected:** files modified less than 30 s ago (by the WSL clock) wait for the next run, and the WSL2 clock can lag behind Windows (about 12 s on the demo machine, more after the PC sleeps). Compare `date` in WSL with the Windows clock; `sudo hwclock -s` in WSL, or `wsl --shutdown` from Windows, resyncs it.
