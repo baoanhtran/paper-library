@@ -4,11 +4,60 @@ INFO-H420 Assignment 3 (ULB): a scheduled Apache Airflow DAG that turns research
 
 ## Overview and architecture
 
-_TODO (A)_
+```text
+Google Drive (synced)               Demo machine (WSL2)
+ResearchLibrary/papers/*.pdf  ───►  Airflow DAG "paper_pipeline", every 5 minutes
+                                      ensure_db               create the SQLite table if needed
+                                      find_new_pdfs           PDFs whose filename is not in SQLite yet
+                                      process_paper [×N]      one copy per new PDF:
+                                        convert_pdf             PyMuPDF4LLM → Markdown
+                                        ask_llm                 Ollama (qwen2.5:7b) → JSON metadata
+                                        save_metadata           SQLite, data/papers.db
+                                      render_html             rebuild index.html from the database
+                                      notify_discord [×N]     one webhook message per new paper
+ResearchLibrary/output/index.html ◄─┘
+```
+
+- **Orchestration:** Apache Airflow 3.3 in standalone mode, one DAG in [dags/paper_pipeline.py](dags/paper_pipeline.py). Helper modules live in [dags/paper_lib/](dags/paper_lib/).
+- **PDF to Markdown:** PyMuPDF4LLM. **Metadata:** a local model served by Ollama, called through its OpenAI-compatible API with the `openai` package in JSON mode.
+- **Storage and outputs:** one SQLite file on the local machine, outside the synced folder; one static `index.html` in Google Drive; one Discord webhook message per new paper.
+- **DAG design:** the per-paper chain is a mapped task group, so one broken paper does not stop the others. The run ends early when there is nothing new, the page is rebuilt even if a paper failed, and only one run is active at a time.
 
 ## Setup (WSL2, Airflow, Google Drive)
 
-_TODO (A)_
+Prerequisites: Linux, macOS, or Windows 11 with WSL2 (Airflow does not run natively on Windows), Python 3.12, git. Tested on Ubuntu 24.04 in WSL2.
+
+1. Clone the repo into the Linux file system (not under `/mnt/c`, which is much slower):
+
+   ```bash
+   git clone https://github.com/baoanhtran/paper-library.git ~/paper-library
+   cd ~/paper-library
+   ```
+
+2. Create a virtualenv with Airflow and the project libraries. The constraints file pins Airflow's own dependencies:
+
+   ```bash
+   python3 -m venv ~/venvs/airflow
+   source ~/venvs/airflow/bin/activate
+   pip install "apache-airflow==3.3.2" -r requirements.txt \
+     --constraint "https://raw.githubusercontent.com/apache/airflow/constraints-3.3.2/constraints-3.12.txt"
+   ```
+
+3. Point Airflow at this repo. Airflow keeps its own files in `AIRFLOW_HOME` (default `~/airflow`):
+
+   ```bash
+   airflow config get-value core dags_folder   # first run creates ~/airflow/airflow.cfg
+   sed -i -E "s|^dags_folder = .*|dags_folder = $HOME/paper-library/dags|; s|^load_examples = .*|load_examples = False|" ~/airflow/airflow.cfg
+   airflow db migrate
+   ```
+
+   Exporting `AIRFLOW__CORE__DAGS_FOLDER` and `AIRFLOW__CORE__LOAD_EXAMPLES=False` before starting Airflow works too.
+
+4. Google Drive for Desktop (Windows side): install it, sign in, and choose *Mirror files* under Preferences → My Drive. In My Drive, create `ResearchLibrary/papers` and `ResearchLibrary/output`. WSL2 sees them under `/mnt/c/Users/<you>/My Drive/ResearchLibrary/` (check the exact folder in Drive's settings). With *Stream files* instead, make `ResearchLibrary` available offline and mount the drive: `sudo mkdir -p /mnt/g && sudo mount -t drvfs G: /mnt/g`. On macOS the folder is under `~/Library/CloudStorage/GoogleDrive-<account>/My Drive/`.
+
+5. Copy `.env.example` to `.env` and fill in your values (see Configuration). Quote paths that contain spaces, such as `"My Drive"`.
+
+6. Set up the local LLM (see LLM setup) and the Discord webhook (see Discord webhook).
 
 ## LLM setup
 
@@ -24,9 +73,17 @@ _TODO (C)_
 
 ## Run and test
 
-_TODO (A)_
+```bash
+source ~/venvs/airflow/bin/activate
+airflow standalone
+```
 
-Module tests run without Airflow (Python 3.11+): `pip install -r requirements.txt`, then `pytest`.
+- Open http://localhost:8080 (it also works from the Windows browser). The user is `admin`; the password is in `~/airflow/simple_auth_manager_passwords.json.generated`.
+- New DAGs start paused: switch `paper_pipeline` on in the UI, or run `airflow dags unpause paper_pipeline`.
+- Drop a PDF into `ResearchLibrary/papers/`. Within about 5 minutes it is converted, summarised, stored, listed in `ResearchLibrary/output/index.html` and announced on Discord. After a restart, the first LLM call takes longer (about 45 s on the demo machine) because the model is loaded into GPU memory; later calls take a few seconds.
+- One run without the scheduler, with every task log in the terminal: `airflow dags test paper_pipeline`.
+
+Tests: run `pytest` from the repo root. Module tests run without Airflow (Python 3.11+): `pip install -r requirements.txt`, then `pytest`. The DAG tests in `tests/test_dag.py` are skipped where Airflow is not installed.
 
 ## Project structure
 
@@ -38,4 +95,11 @@ _TODO (C)_
 
 ## Troubleshooting
 
-_TODO (A)_
+- **`PAPERS_DIR does not exist or is not a folder`** in `find_new_pdfs`: Google Drive is not running or not synced yet, or the path in `.env` is wrong (quote it; with Stream mode, mount the drive first).
+- **`paper_pipeline` is missing from the UI:** check `dags_folder` in `~/airflow/airflow.cfg`, then run `airflow dags list-import-errors`.
+- **`ModuleNotFoundError: paper_lib` outside Airflow:** add `dags/` to `PYTHONPATH`. Airflow does this itself for the DAG processor and the tasks; the tests do it in `tests/conftest.py`.
+- **Port 8080 is already in use:** an older `airflow standalone` is still running (`pgrep -fa airflow`), or set `AIRFLOW__API__PORT` to another port.
+- **LLM calls fail:** check `systemctl status ollama` and `curl http://localhost:11434/api/version`; `ollama ps` shows whether the model runs on the GPU.
+- **No Discord message:** `DISCORD_WEBHOOK_URL` is empty; `notify_discord` is then skipped and says so in its log.
+- **Everything is slow:** keep the repo and the virtualenv in the Linux file system (`~/`), not under `/mnt/c`.
+- **No runs for hours:** the PC went to sleep. Scheduled runs need the machine awake.
