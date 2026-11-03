@@ -8,6 +8,7 @@ INFO-H420 Process Modeling, Data Pipelines, and Responsible AI (ULB). Assignment
 | **Deadline** | Monday 9 November 2026 (our internal deadlines: §4) |
 | **Roles** | **A** Airflow, integration, demo machine · **B** PDF conversion + local LLM · **C** SQLite, HTML page, Discord, report editor |
 | **Report** | LaTeX on OpenAI Prism |
+| **Last update** | Tue 3 Nov 2026 (ticked boxes in §5 show what is done) |
 
 ## 1. What we are building
 
@@ -76,16 +77,21 @@ Checklists, not schedules: do them in any order that suits you, as long as §4 h
 
 Owns `dags/paper_pipeline.py`, `dags/paper_lib/config.py`, the shared repo files (`requirements.txt`, `.env.example`, `.gitignore`), the demo machine, the Google Drive folder, the demo Discord webhook, all end-to-end runs, and report sections 2, 3 and 6.
 
-- [ ] Create the GitHub repo with the full skeleton (§7): folders, `requirements.txt` with every dependency (B's and C's included), `.gitignore`, `.env.example` with every setting from §6, the README headings (§9) and a stub for every function in §6 that returns fake data. Then invite B and C.
+- [x] Create the GitHub repo with the full skeleton (§7): folders, `requirements.txt` with every dependency (B's and C's included), `.gitignore`, `.env.example` with every setting from §6, the README headings (§9) and a stub for every function in §6 that returns fake data.
+- [ ] Invite B and C to the repo.
 - [ ] Check that the group is registered on UV ("Groups for Assignment 3").
-- [ ] Set up the demo machine (§8): Airflow standalone in WSL2, Ollama on the GPU, Google Drive for Desktop with `ResearchLibrary/papers/` and `ResearchLibrary/output/`, and a Discord channel with a webhook for the demo.
-- [ ] `config.py`: read every setting from environment variables. Load `.env` with `python-dotenv`, so tasks see the settings no matter which terminal started Airflow.
-- [ ] The DAG (§6), built and tested on the stubs with `airflow dags test paper_pipeline`: schedule every 5 min, `catchup=False`, `max_active_runs=1`, task retries.
-- [ ] Choose 6–8 demo PDFs on different topics; keep 2 aside to upload during the test.
+- [ ] Set up the demo machine (§8):
+  - [x] Airflow 3.3.2 standalone in WSL2 (`~/venvs/airflow`, `AIRFLOW_HOME=~/airflow`)
+  - [x] Ollama 0.40 as a systemd service; `qwen2.5:7b` runs 100% on the GPU
+  - [ ] Google Drive for Desktop with `ResearchLibrary/papers/` and `ResearchLibrary/output/`
+  - [ ] Discord channel with a webhook for the demo
+- [x] `config.py`: read every setting from environment variables. Load `.env` with `python-dotenv`, so tasks see the settings no matter which terminal started Airflow.
+- [x] The DAG (§6), built and tested on the stubs with `airflow dags test paper_pipeline`: schedule every 5 min, `catchup=False`, `max_active_runs=1`, task retries. Also checked: a run with nothing new skips everything, and a failing paper does not stop the others.
+- [x] Choose 6–8 demo PDFs on different topics; keep 2 aside to upload during the test (8 arXiv papers, one per category, in `data/demo-pdfs/` on the demo machine).
 - [ ] As B's and C's modules are merged: end-to-end runs and the integration checklist (§10). Report bugs to the owner in the group chat.
 - [ ] Take the screenshots of the real run (§9) and upload them to the Prism project.
-- [ ] README: Overview and architecture, Setup, Run and test, Troubleshooting (§9).
-- [ ] Report sections 2, 3 and 6.
+- [x] README: Overview and architecture, Setup, Run and test, Troubleshooting (§9).
+- [ ] Report sections 2, 3 and 6 (2 and 3 drafted and compiled, to paste into Prism once the project exists; 6 after the real run).
 - [ ] Make the repo public before the report deadline.
 
 ### B: PDF conversion and local LLM (3 pts)
@@ -201,7 +207,7 @@ notify_discord [×N]        one message per new paper that is now in the DB
 | Task | Calls | Returns (XCom) |
 |---|---|---|
 | `ensure_db` | `init_db` | nothing |
-| `find_new_pdfs` | `get_processed_filenames`, lists `PAPERS_DIR` | list of new PDF paths |
+| `find_new_pdfs` | `get_processed_filenames`, `list_new_pdfs` | list of new PDF paths |
 | `process_paper.convert_pdf` | `pdf_to_markdown` | `{"filename", "md_path"}` |
 | `process_paper.ask_llm` | `extract_metadata` | paper record |
 | `process_paper.save_metadata` | `save_paper` | nothing |
@@ -227,6 +233,7 @@ paper-library/                 # GitHub repo, cloned inside WSL2 on the demo mac
 │   └── paper_lib/             # importable from the DAG because Airflow puts dags/ on sys.path
 │       ├── __init__.py
 │       ├── config.py          # A
+│       ├── scan.py            # A: list_new_pdfs, used by find_new_pdfs
 │       ├── pdf_to_md.py       # B
 │       ├── llm_metadata.py    # B
 │       ├── storage.py         # C
@@ -260,7 +267,7 @@ Windows 11, Intel i5-12600KF, 32 GB RAM, NVIDIA RTX 4060 (8 GB). WSL2 with Ubunt
 
 ```bash
 python3 -m venv ~/venvs/airflow && source ~/venvs/airflow/bin/activate
-AIRFLOW_VERSION=3.x.y        # latest stable 3.x; pin it in requirements.txt and the README
+AIRFLOW_VERSION=3.3.2        # pinned (requirements.txt and README)
 PYTHON_VERSION=3.12
 pip install "apache-airflow==${AIRFLOW_VERSION}" \
   --constraint "https://raw.githubusercontent.com/apache/airflow/constraints-${AIRFLOW_VERSION}/constraints-${PYTHON_VERSION}.txt"
@@ -287,6 +294,7 @@ Keep the PC awake during scheduled runs and the demo.
 - Temperature 0–0.2 for stable output.
 - The retry-once inside `extract_metadata` is separate from Airflow's task retries. Keep both.
 - On a weaker laptop, develop with a 3–4B model. The final runs use the demo machine's GPU.
+- Measured on the demo machine (`qwen2.5:7b`, JSON mode): about 2 s per call once the model is loaded, about 45 s for the first call after a restart. In a quick test the model returned `keywords` as one comma-separated string instead of a list, so the type checks and the cleanup are needed.
 
 ### HTML page (C)
 
