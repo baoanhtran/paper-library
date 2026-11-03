@@ -80,11 +80,11 @@ Owns `dags/paper_pipeline.py`, `dags/paper_lib/config.py`, the shared repo files
 - [x] Create the GitHub repo with the full skeleton (§7): folders, `requirements.txt` with every dependency (B's and C's included), `.gitignore`, `.env.example` with every setting from §6, the README headings (§9) and a stub for every function in §6 that returns fake data.
 - [ ] Invite B and C to the repo.
 - [x] Check that the group is registered on UV ("Groups for Assignment 3").
-- [ ] Set up the demo machine (§8):
+- [x] Set up the demo machine (§8):
   - [x] Airflow 3.3.2 standalone in WSL2 (`~/venvs/airflow`, `AIRFLOW_HOME=~/airflow`)
   - [x] Ollama 0.40 as a systemd service; `qwen2.5:7b` runs 100% on the GPU
-  - [ ] Google Drive for Desktop with `ResearchLibrary/papers/` and `ResearchLibrary/output/`
-  - [ ] Discord channel with a webhook for the demo
+  - [x] Google Drive for Desktop with `ResearchLibrary/papers/` and `ResearchLibrary/output/`
+  - [x] Discord channel with a webhook for the demo
 - [x] `config.py`: read every setting from environment variables. Load `.env` with `python-dotenv`, so tasks see the settings no matter which terminal started Airflow.
 - [x] The DAG (§6), built and tested on the stubs with `airflow dags test paper_pipeline`: schedule every 5 min, `catchup=False`, `max_active_runs=1`, task retries. Also checked: a run with nothing new skips everything, and a failing paper does not stop the others.
 - [x] Choose 6–8 demo PDFs on different topics; keep 2 aside to upload during the test (8 arXiv papers, one per category, in `data/demo-pdfs/` on the demo machine).
