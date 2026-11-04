@@ -48,7 +48,8 @@ def paper_pipeline():
     def process_paper(pdf_path: str):
         """One copy per new PDF, so a failing paper does not stop the others."""
 
-        @task
+        # multiple_outputs=False: keep the dict as one XCom (a "-> dict" hint would split it per key)
+        @task(multiple_outputs=False)
         def convert_pdf(pdf_path: str) -> dict:
             from paper_lib.pdf_to_md import pdf_to_markdown
 
@@ -56,7 +57,7 @@ def paper_pipeline():
             md_path = pdf_to_markdown(Path(pdf_path), config.MARKDOWN_DIR)
             return {"filename": Path(pdf_path).name, "md_path": str(md_path)}
 
-        @task(execution_timeout=timedelta(minutes=10))
+        @task(multiple_outputs=False, execution_timeout=timedelta(minutes=10))
         def ask_llm(converted: dict) -> dict:
             from paper_lib.llm_metadata import extract_metadata
 

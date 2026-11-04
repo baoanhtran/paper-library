@@ -54,5 +54,10 @@ def test_each_paper_gets_its_own_copy_of_the_group(dag):
     assert isinstance(dag.task_group_dict["process_paper"], MappedTaskGroup)
 
 
+def test_dict_results_stay_one_xcom_value(dag):
+    for task_id in ("process_paper.convert_pdf", "process_paper.ask_llm"):
+        assert dag.get_task(task_id).multiple_outputs is False
+
+
 def test_page_is_rebuilt_even_if_a_paper_failed(dag):
     assert dag.get_task("render_html").trigger_rule == "all_done"
