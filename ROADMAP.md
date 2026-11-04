@@ -78,7 +78,7 @@ Checklists, not schedules: do them in any order that suits you, as long as §4 h
 Owns `dags/paper_pipeline.py`, `dags/paper_lib/config.py`, the shared repo files (`requirements.txt`, `.env.example`, `.gitignore`), the demo machine, the Google Drive folder, the demo Discord webhook, all end-to-end runs, and report sections 2, 3 and 6.
 
 - [x] Create the GitHub repo with the full skeleton (§7): folders, `requirements.txt` with every dependency (B's and C's included), `.gitignore`, `.env.example` with every setting from §6, the README headings (§9) and a stub for every function in §6 that returns fake data.
-- [ ] Invite B and C to the repo.
+- [x] Invite B and C to the repo (C has not accepted the invitation yet).
 - [x] Check that the group is registered on UV ("Groups for Assignment 3").
 - [x] Set up the demo machine (§8):
   - [x] Airflow 3.3.2 standalone in WSL2 (`~/venvs/airflow`, `AIRFLOW_HOME=~/airflow`)
