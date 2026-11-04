@@ -1,0 +1,89 @@
+% Role B: copy into sections/4-pdf-llm.tex in the shared Prism project.
+% This section uses only standard LaTeX commands.
+\section{PDF conversion and local metadata extraction}
+\label{sec:pdf-llm}
+
+\paragraph{Conversion and input.}
+\texttt{pdf\_to\_markdown} uses PyMuPDF4LLM to write UTF-8
+\texttt{<stem>.md} atomically and return its path. OCR and image export
+are disabled. Unreadable or locked PDFs and documents with fewer than
+100 extractable letters/digits raise clear errors. Three research papers
+were converted: CiteArXiv (4 pages, 29.55 seconds), EMNLP scientific
+summarisation (13 pages, 57.36 seconds) and SIGIR LRT (4 pages,
+3.71 seconds). These times include checks and writes; the first also
+includes layout-engine initialisation. All three titles and complete
+abstracts occur in the first 8,000 characters. Inspection found column
+interleaving, fragmented table headers and flattened formulas, so
+conversion does not guarantee faithful layout.
+
+\paragraph{Prompt and validation.}
+The local OpenAI-compatible request uses only that 8,000-character
+prefix, temperature 0.1 and JSON mode. The prompt requires
+\texttt{title}, \texttt{summary}, \texttt{keywords} and \texttt{category};
+its categories are Data Engineering, Machine Learning, Natural Language
+Processing, Computer Vision, Databases, Process Mining \& BPM,
+Responsible AI and Other. Paper text is treated as untrusted source
+material. \texttt{json.loads} and type checks require nonempty strings
+for title, summary and category, and a string list for keywords.
+Whitespace is trimmed, keywords are deduplicated and unknown categories
+become Other. Invalid content is retried once, then raises
+\texttt{ValueError}. An explicit HTTP 400 rejection requiring
+\texttt{json\_schema} switches to the four-field schema without using
+that content retry; unrelated transport errors propagate. The client
+has a 120-second timeout and no SDK retries.
+
+\paragraph{Model comparison.}
+We compared Qwen 2.5 3B Instruct and 1.5B Instruct, both Q4\_K\_M, using
+the actual helper and OpenAI client on the same three prefixes with
+three repetitions per paper. LM Studio 0.4.26+4 used an 8,192-token
+context, one request at a time and automatic GPU offloading on an
+Intel i7-13620H laptop with an RTX 3050 Laptop GPU (4 GB). Each model
+was loaded before timing. Intervals include client setup and the
+observed JSON-schema fallback; the first also includes lazy SDK import.
+
+\begin{center}
+\small
+\begin{tabular}{lrrr}
+Model & Valid & Mean, all 9 (s) & Mean, rounds 2--3 (s) \\
+\hline
+3B & 9/9 & 10.86 & 8.16 \\
+1.5B & 9/9 & 9.21 & 7.24 \\
+\end{tabular}
+\end{center}
+
+Both models reproduced the exact title in all nine outputs. The 3B
+model retained CiteArXiv's new dataset and graph model, whereas 1.5B
+focused on background and omitted those contributions in all three
+runs. Agreement with our preferred NLP category was 8/9 versus 6/9;
+alternative labels are not schema failures. We recommend 3B Q4\_K\_M
+for this laptop: better coverage cost approximately 0.92 seconds per
+call in the later rounds. Some 3B SIGIR claims still lost the ``trainable'' qualifier
+or used stronger effectiveness wording than the source's applicability
+claim; the inspected body labels its evaluation an Experimental Plan. This small NLP-only sample supports a local choice, not a general
+ranking. The demo's \texttt{qwen2.5:7b} default
+was not compared.
+
+\paragraph{Observed output and checks.}
+The following is the actual 3B CiteArXiv output from repetition 2
+(7.52 seconds), generated through \texttt{extract\_metadata}, without
+an extra reasoning parameter. A second real-paper example and all
+18 outputs are retained in \texttt{docs/examples/}; methodology and
+quality observations are in \texttt{docs/role-b-evaluation.md}.
+
+\begin{quote}
+\small\ttfamily\raggedright
+\{\\
+"title": "CiteArXiv: A Citation-enriched Dataset and Heterogeneous Graph-based Model for Scientific Articles Summarization",\\
+"summary": "This paper presents CiteArXiv, a large-scale dataset of scientific articles enriched with citation sentences. It introduces a heterogeneous graph model that integrates both internal content and external citation context to enhance scientific summarization performance. The approach addresses the challenge of summarizing long and complex scientific papers by leveraging citation information.",\\
+"keywords": ["Scientific Document", "Citation Mining",
+"Document Summarization"],\\
+"category": "Natural Language Processing"\\
+\}
+\end{quote}
+
+The full local test run passed 74 tests; only Airflow DAG tests were
+skipped. This includes 16 PDF tests and real-SDK HTTP mock tests for
+serialization, parsing, compatibility fallback, retry limits and errors.
+The standalone PDF-to-metadata CLI also succeeded on CiteArXiv using
+the local configuration. These checks do not establish full Airflow
+execution.

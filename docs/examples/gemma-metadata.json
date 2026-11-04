@@ -1,0 +1,35 @@
+{
+  "provenance": {
+    "observed_on": "2026-11-04",
+    "source_markdown": "docs/examples/sample-paper.md",
+    "source_kind": "synthetic_fixture_not_a_published_paper",
+    "backend": "LM Studio local OpenAI-compatible HTTP endpoint",
+    "model_alias": "role-b-gemma",
+    "model_family": "Gemma 4 E4B",
+    "quantization": "Q4_K_M",
+    "context_tokens": 4096,
+    "request_method": "raw HTTP diagnostic; not extract_metadata or the OpenAI Python client",
+    "response_format": "json_schema",
+    "reasoning_effort": "none",
+    "elapsed_seconds": 23.989411,
+    "finish_reason": "stop",
+    "note": "One observed output from one model configuration; not a two-model quality/performance comparison.",
+    "source_sha256": "b52a63b9a8ef17c1cd24cd6df93cc19c1da68df7499a9faf0b55b07f3775d435",
+    "completion_tokens": 151,
+    "implemented_helper_sends_reasoning_effort": false,
+    "persistence_note": "reasoning_effort=none applied to this raw request only; no persistent model setting was changed."
+  },
+  "metadata": {
+    "title": "A Metadata Pipeline for a Research Library",
+    "summary": "The paper proposes a data engineering workflow to manage research papers accumulating in shared folders by converting PDFs to Markdown and extracting structured metadata using a local language model. This process stores the extracted metadata in an SQLite database, which is then supported by a static HTML catalogue for searching. The main contribution is the integration of file discovery, document conversion, metadata validation, and incremental cataloging to reduce manual cataloguing work.",
+    "keywords": [
+      "Data Engineering",
+      "Metadata Extraction",
+      "PDF Processing",
+      "SQLite",
+      "Language Model",
+      "Workflow Automation"
+    ],
+    "category": "Data Engineering"
+  }
+}
