@@ -7,7 +7,7 @@ Observed on 4 November 2026. The PDF and LLM helpers now run on the three suppli
 - [Complete comparison](examples/model-comparison.json): all 18 observed outputs, timings, source hashes, prompt and manual review notes.
 - [Two real-paper examples](examples/qwen3b-real-metadata.json): exact Qwen 3B metadata returned through `extract_metadata` and the installed OpenAI Python client.
 - [Conversion evidence](examples/pdf-conversion.json): source/file/text hashes, counts, timings and selected-page visual observations.
-- [Reproduction script](scripts/benchmark_llm.py) and [handoff commands](role-b-handoff.md).
+- [Benchmark script](scripts/benchmark_llm.py) and [one-paper CLI](scripts/process_paper.py).
 
 The development laptop has an Intel Core i7-13620H, RTX 3050 Laptop GPU with 4 GB VRAM, and approximately 40 GB RAM. Software: Windows 11, Python 3.12.6, LM Studio 0.4.26+4, PyMuPDF/PyMuPDF4LLM 2.1 and OpenAI client 2.54.0.
 
