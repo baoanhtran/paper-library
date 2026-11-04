@@ -8,7 +8,7 @@ INFO-H420 Process Modeling, Data Pipelines, and Responsible AI (ULB). Assignment
 | **Deadline** | Monday 9 November 2026 (our internal deadlines: §4) |
 | **Roles** | **A** Airflow, integration, demo machine · **B** PDF conversion + local LLM · **C** SQLite, HTML page, Discord, report editor |
 | **Report** | LaTeX on OpenAI Prism |
-| **Last update** | Tue 3 Nov 2026 (ticked boxes in §5 show what is done) |
+| **Last update** | Thu 5 Nov 2026 (ticked boxes in §5 show what is done) |
 
 ## 1. What we are building
 
@@ -88,7 +88,7 @@ Owns `dags/paper_pipeline.py`, `dags/paper_lib/config.py`, the shared repo files
 - [x] `config.py`: read every setting from environment variables. Load `.env` with `python-dotenv`, so tasks see the settings no matter which terminal started Airflow.
 - [x] The DAG (§6), built and tested on the stubs with `airflow dags test paper_pipeline`: schedule every 5 min, `catchup=False`, `max_active_runs=1`, task retries. Also checked: a run with nothing new skips everything, and a failing paper does not stop the others.
 - [x] Choose 6–8 demo PDFs on different topics; keep 2 aside to upload during the test (8 arXiv papers, one per category, in `data/demo-pdfs/` on the demo machine).
-- [ ] As B's and C's modules are merged: end-to-end runs and the integration checklist (§10). Report bugs to the owner in the group chat.
+- [ ] As B's and C's modules are merged: end-to-end runs and the integration checklist (§10). Report bugs to the owner in the group chat. B's modules merged and checked on 5 Nov (8/8 demo PDFs, full DAG run); waiting for C's.
 - [ ] Take the screenshots of the real run (§9) and upload them to the Prism project.
 - [x] README: Overview and architecture, Setup, Run and test, Troubleshooting (§9).
 - [ ] Report sections 2, 3 and 6 (2 and 3 drafted and compiled, to paste into Prism once the project exists; 6 after the real run).
@@ -98,13 +98,13 @@ Owns `dags/paper_pipeline.py`, `dags/paper_lib/config.py`, the shared repo files
 
 Owns `dags/paper_lib/pdf_to_md.py`, `dags/paper_lib/llm_metadata.py`, their tests, the README section "LLM setup", and report sections 4 and 7. Works on their own laptop with their own sample PDFs; no Airflow needed.
 
-- [ ] Install Ollama (or LM Studio) and get a first JSON answer through the `openai` client.
-- [ ] `pdf_to_markdown()` (§6): check the output on your sample PDFs (two-column layouts, tables, formulas). Raise a clear error when a PDF gives almost no text (e.g. a scanned paper).
-- [ ] `extract_metadata()` (§6): the category list in the prompt; only the beginning of the paper as input (e.g. the first ~8,000 characters: title, abstract, introduction); low temperature; JSON mode; `json.loads`; retry once; type checks; light cleanup (trim, de-duplicate keywords, unknown category → `Other`); `ValueError` if the second attempt fails too.
-- [ ] Unit tests with a fake LLM client: valid JSON / invalid then valid / invalid twice / missing field.
-- [ ] Compare 2 models you can run (quality and seconds per paper) and post your recommendation in the group chat. The demo machine has 8 GB of VRAM, so a 7–8B model works there too.
-- [ ] README "LLM setup": installing Ollama, pulling the model, switching to LM Studio.
-- [ ] Report sections 4 (with 1–2 example LLM outputs) and 7.
+- [x] Install Ollama (or LM Studio) and get a first JSON answer through the `openai` client.
+- [x] `pdf_to_markdown()` (§6): check the output on your sample PDFs (two-column layouts, tables, formulas). Raise a clear error when a PDF gives almost no text (e.g. a scanned paper).
+- [x] `extract_metadata()` (§6): the category list in the prompt; only the beginning of the paper as input (e.g. the first ~8,000 characters: title, abstract, introduction); low temperature; JSON mode; `json.loads`; retry once; type checks; light cleanup (trim, de-duplicate keywords, unknown category → `Other`); `ValueError` if the second attempt fails too.
+- [x] Unit tests with a fake LLM client: valid JSON / invalid then valid / invalid twice / missing field.
+- [x] Compare 2 models you can run (quality and seconds per paper) and post your recommendation in the group chat. The demo machine has 8 GB of VRAM, so a 7–8B model works there too.
+- [x] README "LLM setup": installing Ollama, pulling the model, switching to LM Studio.
+- [ ] Report sections 4 (with 1–2 example LLM outputs) and 7 (written in `docs/sections/`, to copy into Prism).
 
 ### C: SQLite, HTML page, Discord, report editor (2 pts + editing)
 
