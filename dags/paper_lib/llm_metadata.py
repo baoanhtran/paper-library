@@ -16,6 +16,7 @@ CATEGORIES: list[str] = [
     "Responsible AI",
     "Other",
 ]
+_CATEGORY_BY_CASEFOLD = {category.casefold(): category for category in CATEGORIES}
 
 MAX_INPUT_CHARS = 8_000
 REQUEST_TIMEOUT_SECONDS = 120.0
@@ -57,7 +58,7 @@ def _validate_metadata(value: object) -> dict:
         "title": cleaned["title"],
         "summary": cleaned["summary"],
         "keywords": cleaned_keywords,
-        "category": cleaned["category"] if cleaned["category"] in CATEGORIES else "Other",
+        "category": _CATEGORY_BY_CASEFOLD.get(cleaned["category"].casefold(), "Other"),
     }
 
 

@@ -145,6 +145,15 @@ def test_trim_deduplicate_fallback_and_return_only_contract_fields(fake_client):
     }
 
 
+@pytest.mark.parametrize("category", llm_metadata.CATEGORIES)
+@pytest.mark.parametrize("variant", ["canonical", "mixed_case_with_whitespace"])
+def test_category_case_is_normalized_without_retry(fake_client, category, variant):
+    supplied_category = category if variant == "canonical" else f" \t{category.swapcase()}\n "
+    value = {**VALID, "category": supplied_category}
+    assert extract(fake_client, completion(json.dumps(value))) == {**VALID, "category": category}
+    assert len(fake_client.calls) == 1
+
+
 def test_only_first_8000_characters_sent_on_both_attempts(fake_client):
     source = "a" * 8_000 + "PRIVATE_TAIL_MUST_NOT_BE_SENT"
     extract(fake_client, completion("bad"), completion(json.dumps(VALID)), markdown=source)
