@@ -1,0 +1,108 @@
+{
+  "measured_at_utc": "2026-11-04T09:41:02.829962+00:00",
+  "python": "3.12.6",
+  "platform": "Windows-11-10.0.26300-SP0",
+  "pymupdf_version": "2.1",
+  "notes": "One sequential conversion per input, source stats outside timed interval. First conversion includes PyMuPDF4LLM import/layout engine initialisation; all durations include helper native-text checks and UTF-8 atomic file write.",
+  "papers": [
+    {
+      "filename": "2025_03_WWW_2025_CiteArxiv.pdf",
+      "source_sha256": "8def4fbc3b38fb76ea5c2a90f5bcb572115907d1cbd1fb074d29b2d596c06cdf",
+      "source_bytes": 1194756,
+      "page_count": 4,
+      "native_text_characters": 23510,
+      "native_alphanumeric_characters": 18755,
+      "conversion_seconds": 29.5463,
+      "markdown_characters": 25391,
+      "markdown_alphanumeric_characters": 19276,
+      "markdown_path": "data/markdown/2025_03_WWW_2025_CiteArxiv.md",
+      "replacement_characters": 8,
+      "prefix_replacement_characters": 0,
+      "picture_text_blocks": 8,
+      "visual_review": {
+        "visually_reviewed_pages": [
+          1,
+          3
+        ],
+        "observations": [
+          "Title and actual abstract retained within the first 8000 Markdown characters.",
+          "Page 1 reading order interleaves columns: a right-column introduction paragraph appears immediately after the Abstract heading, before the actual abstract; Related Work precedes Introduction.",
+          "Page 3 Table 1 column labels and numeric values match the source in the inspected cells.",
+          "Page 3 equations lose mathematical layout; some symbols become replacement characters inside extracted picture-text blocks. No reliable LaTeX recovery is claimed."
+        ]
+      },
+      "reference_title": "CiteArXiv: A Citation-enriched Dataset and Heterogeneous Graph-based Model for Scientific Articles Summarization",
+      "markdown_file_sha256": "b6f4f7bc5138747f92fd7c0eb3ad7caa0e419bbec4990701bf31f0590be89dc2",
+      "markdown_text_sha256": "bf7fe8fc2d4d4bd4c57618da69afc0921d4b4a1b2f0b2e105265e25dfd67aad7",
+      "prefix_sha256": "4623c4f869e2f044e58a82a681f73364350bd647e2ed6f22dbc0fd10c86a84a5",
+      "sent_characters": 8000
+    },
+    {
+      "filename": "2025_05_EMNLP_2025__Scientific_summarization.pdf",
+      "source_sha256": "fff47b5438bd40d7425967898defebc1f42a13a8f4407e5cc28d2e027f56fe37",
+      "source_bytes": 4326754,
+      "page_count": 13,
+      "native_text_characters": 54750,
+      "native_alphanumeric_characters": 43455,
+      "conversion_seconds": 57.3645,
+      "markdown_characters": 59388,
+      "markdown_alphanumeric_characters": 44858,
+      "markdown_path": "data/markdown/2025_05_EMNLP_2025__Scientific_summarization.md",
+      "replacement_characters": 10,
+      "prefix_replacement_characters": 0,
+      "picture_text_blocks": 20,
+      "visual_review": {
+        "visually_reviewed_pages": [
+          1,
+          3,
+          5
+        ],
+        "observations": [
+          "Title and complete abstract extracted before the introduction, matching the inspected first-page text order.",
+          "First-page figure contains an example summary about another paper; figure text is included in the first 8000 characters and consumes context. It should not be mistaken for this paper's contribution.",
+          "Page 5 Table 1 numerical entries inspected against the source are retained, but spanning headers and summary labels split across cells (e.g. a two-column label becomes two fragments).",
+          "Page 3 equation 1 loses the summation glyph and fraction/subscript layout; mathematical interpretation requires the PDF."
+        ]
+      },
+      "reference_title": "Beyond the Scientific Document: A Citation-Aware Multi-Granular Summarization Approach with Heterogeneous Graphs",
+      "markdown_file_sha256": "ecdaeb83bcb9f6f069f2e65f5ec4390f5250ac743ba731bc7045dc29988aa7ec",
+      "markdown_text_sha256": "84f10e02bae83d1336fe8a76583c520f4c87bc38b1e12806b75b272ea6ea11a7",
+      "prefix_sha256": "676fe089cf22e83c528c33f6352fd1098d2cd6855517fe0ccf4a91c14acdbda1",
+      "sent_characters": 8000
+    },
+    {
+      "filename": "2026_04_SIGIR_2026_LRT.pdf",
+      "source_sha256": "f72d1d1e322fad5986ea3427d6d200c647060fa659bc883d441274a769c3b546",
+      "source_bytes": 1562379,
+      "page_count": 4,
+      "native_text_characters": 23669,
+      "native_alphanumeric_characters": 19080,
+      "conversion_seconds": 3.7137,
+      "markdown_characters": 25162,
+      "markdown_alphanumeric_characters": 19420,
+      "markdown_path": "data/markdown/2026_04_SIGIR_2026_LRT.md",
+      "replacement_characters": 7,
+      "prefix_replacement_characters": 0,
+      "picture_text_blocks": 5,
+      "visual_review": {
+        "visually_reviewed_pages": [
+          1,
+          2,
+          3
+        ],
+        "observations": [
+          "Title and actual abstract retained within the first 8000 Markdown characters.",
+          "Page 1 interleaves the right-column introduction continuation under the Abstract heading before the actual abstract; author block order also changes.",
+          "Page 2 Algorithm 1 is rendered as a one-column Markdown table. Pseudocode text remains present but indentation and layout are not preserved faithfully.",
+          "Page 2 equations retain some symbol text but lose fractions/subscripts and contain replacement characters. The source has no numerical result table on inspected pages."
+        ]
+      },
+      "reference_title": "Graph-Enhanced Sentence Retrieval for Multi-Document Summarization in Low-Resource Languages",
+      "markdown_file_sha256": "31988f58691e8d329855d17db4311972891e3781f35df9cf15dbd54d77a234b3",
+      "markdown_text_sha256": "66a323b9c313f5e41e26d0cb9560ee37c0fe850c66d18006c1701965841deb83",
+      "prefix_sha256": "9273520234fa5e80a873b3633e118ad7098091ba826e816172a6cfcaf363c912",
+      "sent_characters": 8000
+    }
+  ],
+  "pymupdf4llm_version": "2.1"
+}

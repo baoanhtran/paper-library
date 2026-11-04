@@ -1,0 +1,53 @@
+{
+  "provenance": {
+    "observed_on": "2026-11-04",
+    "method": "Actual extract_metadata helper using the installed OpenAI Python client and local LM Studio.",
+    "model": "Qwen2.5-3B-Instruct Q4_K_M",
+    "context_tokens": 8192,
+    "input": "First 8000 characters of each converted real PDF.",
+    "comparison_evidence": "docs/examples/model-comparison.json",
+    "note": "These are exact observed outputs, including category/summary limitations documented in the evaluation."
+  },
+  "papers": [
+    {
+      "filename": "2025_03_WWW_2025_CiteArxiv.pdf",
+      "source_sha256": "8def4fbc3b38fb76ea5c2a90f5bcb572115907d1cbd1fb074d29b2d596c06cdf",
+      "markdown_file_sha256": "b6f4f7bc5138747f92fd7c0eb3ad7caa0e419bbec4990701bf31f0590be89dc2",
+      "markdown_text_sha256": "bf7fe8fc2d4d4bd4c57618da69afc0921d4b4a1b2f0b2e105265e25dfd67aad7",
+      "prefix_sha256": "4623c4f869e2f044e58a82a681f73364350bd647e2ed6f22dbc0fd10c86a84a5",
+      "run": 2,
+      "elapsed_seconds": 7.518355,
+      "metadata": {
+        "title": "CiteArXiv: A Citation-enriched Dataset and Heterogeneous Graph-based Model for Scientific Articles Summarization",
+        "summary": "This paper presents CiteArXiv, a large-scale dataset of scientific articles enriched with citation sentences. It introduces a heterogeneous graph model that integrates both internal content and external citation context to enhance scientific summarization performance. The approach addresses the challenge of summarizing long and complex scientific papers by leveraging citation information.",
+        "keywords": [
+          "Scientific Document",
+          "Citation Mining",
+          "Document Summarization"
+        ],
+        "category": "Natural Language Processing"
+      }
+    },
+    {
+      "filename": "2025_05_EMNLP_2025__Scientific_summarization.pdf",
+      "source_sha256": "fff47b5438bd40d7425967898defebc1f42a13a8f4407e5cc28d2e027f56fe37",
+      "markdown_file_sha256": "ecdaeb83bcb9f6f069f2e65f5ec4390f5250ac743ba731bc7045dc29988aa7ec",
+      "markdown_text_sha256": "84f10e02bae83d1336fe8a76583c520f4c87bc38b1e12806b75b272ea6ea11a7",
+      "prefix_sha256": "676fe089cf22e83c528c33f6352fd1098d2cd6855517fe0ccf4a91c14acdbda1",
+      "run": 2,
+      "elapsed_seconds": 8.637078,
+      "metadata": {
+        "title": "Beyond the Scientific Document: A Citation-Aware Multi-Granular Summarization Approach with Heterogeneous Graphs",
+        "summary": "This paper proposes CiteHeteroSum, a model that creates summaries from both input documents and relevant citations. It uses a heterogeneous graph to capture multi-granular information, ranging from fine-grained textual components to global document structure, and from internal content to external citation context. The model combines triplet loss and summary loss to optimize performance.",
+        "keywords": [
+          "scientific summarization",
+          "heterogeneous graphs",
+          "citation-aware",
+          "multi-granularity",
+          "graph attention mechanism"
+        ],
+        "category": "Natural Language Processing"
+      }
+    }
+  ]
+}

@@ -61,7 +61,67 @@ Prerequisites: Linux, macOS, or Windows 11 with WSL2 (Airflow does not run nativ
 
 ## LLM setup
 
-_TODO (B)_
+Role B can develop and test these modules on native Windows, Linux or macOS with Python 3.11+; Airflow is only needed on A's demo machine. From the repository root, create a virtual environment and install the existing dependencies:
+
+```bash
+python -m venv .venv
+# Linux / macOS / WSL2:
+source .venv/bin/activate
+# Windows PowerShell instead:
+# .\.venv\Scripts\Activate.ps1
+python -m pip install -r requirements.txt
+```
+
+**Ollama.** Install the [Windows or macOS application](https://ollama.com/download), or install inside Linux/WSL2 with `curl -fsSL https://ollama.com/install.sh | sh` ([Linux instructions](https://docs.ollama.com/linux)). On the demo machine, install inside WSL2 so the endpoint is reachable from Airflow at `localhost`. Start the application/service; if it is not running, use `ollama serve` in another terminal. Then download the configured model:
+
+```bash
+ollama pull qwen2.5:7b
+ollama list
+```
+
+Copy `.env.example` to `.env` if needed, keeping these settings for Ollama:
+
+```dotenv
+LLM_BASE_URL=http://localhost:11434/v1
+LLM_MODEL=qwen2.5:7b
+```
+
+`qwen2.5:7b` is the shared demo default and was not part of B's laptop comparison. For the tested RTX 3050 Laptop GPU (4 GB), B recommends **Qwen 2.5 3B Instruct Q4_K_M**: it captured the papers' main contributions more reliably than 1.5B in the three-paper evaluation, at about 0.92 seconds more per call in later repetitions. See the [measured comparison and quality notes](docs/role-b-evaluation.md). With Ollama, pull `qwen2.5:3b` and change `LLM_MODEL` to try the smaller model; the measured Q4_K_M comparison itself used LM Studio.
+
+Downloaded weights take disk space. The first request can include model loading if the model is not already loaded. Use `ollama ps` to inspect the loaded model and CPU/GPU use. The client points at the configured local endpoint and supplies a dummy API key; no cloud API key is required. Ollama documents its [OpenAI-compatible endpoint and JSON mode](https://docs.ollama.com/api/openai-compatibility).
+
+The module sends at most the first 8,000 Markdown characters, with temperature 0.1 and `response_format={"type": "json_object"}`. Configure enough server context for this prefix plus the prompt and response; the character limit is not a token limit. Ollama's [context documentation](https://docs.ollama.com/context-length) explains `OLLAMA_CONTEXT_LENGTH`; restart the server after changing it. An 8,192-token context is a practical starting point for ordinary English papers, subject to available memory.
+
+Keep the exact category list and output-field requirements in the prompt. Wrong field types, including a comma-separated `keywords` string, trigger one further attempt; two invalid responses raise `ValueError`. A server that explicitly rejects `json_object` with HTTP 400 and requires `json_schema` is retried using the same four-field JSON schema. That compatibility request does not consume the invalid-output retry; at most three HTTP requests are made when a format rejection is followed by two invalid answers. Other connection and HTTP failures propagate to the caller for Airflow's task retry.
+
+**Try a real PDF without Airflow.** With the local model server running, put a text-based paper at `data/papers/sample.pdf` and run the [one-paper CLI](docs/scripts/process_paper.py) from the repository root:
+
+```bash
+python docs/scripts/process_paper.py data/papers/sample.pdf --output data/metadata/sample.json
+```
+
+The command converts the PDF, extracts validated metadata, prints the JSON and saves it at `--output`. It reads the existing configuration module and `.env`; `--base-url`, `--model` and `--markdown-dir` override those settings. On Windows, use `.\.venv\Scripts\python.exe` in place of `python` if the environment is not activated. Run `python docs/scripts/process_paper.py --help` for the options.
+
+The returned JSON has exactly `title`, `summary`, `keywords` (a list of strings) and `category`. Conversion preserves extractable PDF text and supported layout features; it does not perform OCR. Scanned, password-protected, broken or almost textless PDFs raise clear errors. Formulas and complex tables still need visual checking against the source. Local PDFs, converted Markdown and settings stay under the existing ignore rules.
+
+**LM Studio alternative.** Install [LM Studio](https://lmstudio.ai/download), download and load an instruction-tuned model that fits your machine, then start its local server in the Developer tab (or `lms server start`). Use the exact model identifier shown by the server's `/v1/models` endpoint:
+
+```dotenv
+LLM_BASE_URL=http://localhost:1234/v1
+LLM_MODEL=<loaded-model-identifier>
+```
+
+Prefer an instruction model that returns a direct answer, as the roadmap recommends. A reasoning model can exhaust the output budget before completing its JSON. The helper does not send a `reasoning_effort` parameter; any reasoning-off configuration must actually apply to API requests, rather than being assumed from an interactive chat setting.
+
+The same Python modules and tests are used for both backends. Some LM Studio versions require `json_schema` rather than `json_object`; this was observed on the development laptop. The client switches to its four-field schema only for the explicit HTTP 400 response-format rejection. The selected model/backend must support that schema; unrelated HTTP errors still propagate. See [LM Studio's OpenAI compatibility](https://lmstudio.ai/docs/developer/openai-compat) and [structured output](https://lmstudio.ai/docs/developer/openai-compat/structured-output) documentation.
+
+Run B's tests without starting an LLM server:
+
+```bash
+python -m pytest tests/test_pdf_to_md.py tests/test_llm_metadata.py tests/test_contract.py -q
+```
+
+B's [evaluation](docs/role-b-evaluation.md) covers three real PDFs and 18 helper calls: both models returned valid metadata in 9/9 runs each. Mean time across all calls was 10.86 seconds for 3B and 9.21 seconds for 1.5B; later rounds averaged 8.16 and 7.24 seconds. Models were preloaded, so these values exclude model loading. [Portable results](docs/examples/model-comparison.json) and [two actual 3B outputs](docs/examples/qwen3b-real-metadata.json) preserve the evidence. Run `docs/scripts/benchmark_llm.py --help` to repeat the comparison. Check summary claims against the source; valid JSON and exact titles do not establish factual accuracy, and the three-paper result is not a general model ranking.
 
 ## Discord webhook
 

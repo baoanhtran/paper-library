@@ -1,0 +1,36 @@
+% Role B: copy into sections/7-limitations.tex in the shared Prism project.
+\section{Limitations and improvements}
+\label{sec:limitations}
+
+Conversion is useful but imperfect. Inspection of the three supplied papers
+found interleaved columns in the ACM layouts, fragmented merged table
+headers and flattened formulas. The CiteArXiv, EMNLP and SIGIR conversions
+contained 8, 10 and 7 replacement characters respectively, although none
+occurred in the first 8,000 characters sent to the LLM. The EMNLP prefix
+also included a figure's example summary about a different paper, which can
+confuse the model about the source contribution. OCR remains disabled, so
+image-only documents require preprocessing. Layout-aware extraction and
+tests on more papers would improve reliability.
+
+The 8,000-character prefix retained all three titles and complete abstracts
+but can omit results and conclusions. A section-aware input selection and
+token-aware budget would represent the full paper more reliably. JSON mode,
+a schema fallback, type checks and one retry enforce the metadata shape;
+they cannot establish factual accuracy or correct classification. Summaries
+need comparison with the source, especially when figure text and references
+are mixed into the prefix. The comparison exposed this distinction: 1.5B
+omitted CiteArXiv's main contributions, and some 3B SIGIR outputs lost the
+``trainable'' qualifier or used stronger effectiveness wording than the
+source's applicability claim. The inspected body labels its evaluation an
+Experimental Plan, so experimental status needs checking. A labelled
+evaluation set and source-linked summary claims are useful next steps.
+
+Local timing depends on model size, context, offloading and whether the
+model is already loaded. A three-paper NLP comparison on one laptop is a
+limited engineering check rather than a general model ranking, and it does
+not establish performance on the demo machine. Reasoning models can exhaust
+the response budget before completing JSON; the regular helper expects a
+model that returns direct answers. Finally, filename-based discovery misses
+revised content under the same name, while failed PDFs can be retried on
+later runs. Content hashes and recorded processing status would make
+incremental operation more reliable.
