@@ -125,11 +125,64 @@ B's [evaluation](docs/role-b-evaluation.md) covers three real PDFs and 18 helper
 
 ## Discord webhook
 
-_TODO (C)_
+The pipeline posts one message per new paper to a Discord channel (title, summary, category, keywords, file name).
+
+1. In Discord, open the channel's settings → **Integrations** → **Webhooks** → **New Webhook**, name it, and choose **Copy Webhook URL**.
+2. Put the URL in `.env` (never in a file that is committed):
+
+   ```dotenv
+   DISCORD_WEBHOOK_URL="https://discord.com/api/webhooks/<id>/<token>"
+   ```
+
+3. Send a test message without running the pipeline:
+
+   ```bash
+   python -c "
+   import sys; sys.path.insert(0, 'dags')
+   from paper_lib import config
+   from paper_lib.notify import notify_new_paper
+   notify_new_paper(config.DISCORD_WEBHOOK_URL, {'filename': 'test.pdf', 'title': 'Webhook test',
+       'summary': 'Hello from the pipeline.', 'keywords': ['test'], 'category': 'Other'})
+   print('sent')"
+   ```
+
+The URL is a secret: anyone who has it can post to the channel. If it leaks, delete the webhook in Discord and create a new one. If 'DISCORD_WEBHOOK_URL' is empty, 'notify_discord' is skipped and says so in its log. An HTTP error (for example 404 for a deleted webhook) fails only that task; the database and the page are still correct. A paper that failed earlier in the pipeline is not announced.
+
 
 ## Configuration
 
-_TODO (C)_
+All settings are environment variables, read by `dags/paper_lib/config.py`. Copy `.env.example` to `.env` at the repository root and edit it. Relative paths are resolved from the repository root. Quote paths that contain spaces, such as `"My Drive"`.
+
+| Variable | Default | Meaning |
+|---|---|---|
+| `PAPERS_DIR` | `data/papers` | Folder scanned for PDFs; the Google Drive `ResearchLibrary/papers` folder |
+| `OUTPUT_HTML` | `data/output/index.html` | **File** path of the generated page (must end in `index.html`); the Drive `ResearchLibrary/output` folder |
+| `DB_PATH` | `data/papers.db` | SQLite database; keep it local, outside the synced folder |
+| `MARKDOWN_DIR` | `data/markdown` | Cache of the Markdown converted from each PDF |
+| `LLM_BASE_URL` | `http://localhost:11434/v1` | OpenAI-compatible endpoint (Ollama; LM Studio uses port 1234) |
+| `LLM_MODEL` | `qwen2.5:7b` | Model name, exactly as shown by `ollama list` |
+| `DISCORD_WEBHOOK_URL` | empty | Webhook for notifications; empty disables them |
+
+Example for macOS (Google Drive in Mirror mode):
+
+```dotenv
+PAPERS_DIR="/Users/<you>/Library/CloudStorage/GoogleDrive-<account>/My Drive/ResearchLibrary/papers"
+OUTPUT_HTML="/Users/<you>/Library/CloudStorage/GoogleDrive-<account>/My Drive/ResearchLibrary/output/index.html"
+DB_PATH=data/papers.db
+MARKDOWN_DIR=data/markdown
+LLM_BASE_URL=http://localhost:11434/v1
+LLM_MODEL=qwen2.5:3b
+```
+Notes:
+
+- **Variables already set in the shell win over `.env`.** If the settings do not change after you edit `.env`, run `env | grep -E "PAPERS_DIR|OUTPUT_HTML|LLM_|DISCORD"` and `unset` the old ones. There is no need to `source .env`; `config.py` reads the file itself.
+- **Check the settings** without running anything:
+
+  ```bash
+  python -c "import sys; sys.path.insert(0,'dags'); from paper_lib import config as c; print(c.PAPERS_DIR, c.PAPERS_DIR.is_dir()); print(c.OUTPUT_HTML); print(c.LLM_MODEL, bool(c.DISCORD_WEBHOOK_URL))"
+  ```
+
+- `.env` is listed in `.gitignore`. Keep it that way, since it holds the webhook URL.
 
 ## Run and test
 
@@ -147,11 +200,69 @@ Tests: run `pytest` from the repo root. Module tests run without Airflow (Python
 
 ## Project structure
 
-_TODO (C)_
+```text
+paper-library/
+├── dags/
+│   ├── paper_pipeline.py        # the Airflow DAG: task graph and scheduling
+│   └── paper_lib/               # helper modules, one owner each (contract: ROADMAP.md §6)
+│       ├── config.py            # settings from .env / environment
+│       ├── scan.py              # find PDFs not yet in the database
+│       ├── pdf_to_md.py         # PDF → Markdown (PyMuPDF4LLM)
+│       ├── llm_metadata.py      # Markdown → validated JSON via the local LLM
+│       ├── storage.py           # SQLite: papers table and its five functions
+│       ├── html_page.py         # builds the static index.html (search, filter)
+│       └── notify.py            # Discord webhook message
+├── tests/                       # pytest; modules run without Airflow
+│   ├── conftest.py              # puts dags/ on the Python path
+│   └── test_*.py                # contract, scan, pdf_to_md, llm_metadata, storage, html_page, notify, dag
+├── docs/
+│   ├── scripts/
+│   │   ├── process_paper.py     # one PDF → JSON, no Airflow
+│   │   └── benchmark_llm.py     # model comparison
+│   └── role-b-evaluation.md     # LLM evaluation
+├── data/                        # local, not synced: papers.db, markdown/ (git-ignored)
+├── .env.example                 # template for .env
+├── requirements.txt
+├── ROADMAP.md                   # plan, roles, interface contract
+└── README.md
+```
+
+The DAG file only wires tasks together and imports heavy libraries inside the tasks, so the scheduler parses it quickly. The logic lives in `paper_lib/` so it can be tested without Airflow.
+
 
 ## Outputs
 
-_TODO (C)_
+For each new PDF the pipeline produces three results; the Markdown text is only an intermediate file.
+
+**1. SQLite record** (`data/papers.db`, local). One row per paper in the `papers` table:
+
+```sql
+CREATE TABLE papers (
+    filename     TEXT PRIMARY KEY,      -- PDFs are assumed to have unique names
+    title        TEXT NOT NULL,
+    summary      TEXT NOT NULL,
+    keywords     TEXT NOT NULL,         -- JSON array of strings
+    category     TEXT NOT NULL,
+    processed_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+Saving an existing filename updates the row, so re-running is safe. The database uses WAL mode, so `papers.db-wal` and `papers.db-shm` files appear next to it; that is normal. Inspect it with:
+
+```bash
+sqlite3 -header -column data/papers.db "select filename, title, category, keywords from papers;"
+```
+
+**2. Static web page** (`ResearchLibrary/output/index.html`, synced through Google Drive). One self-contained file with inline CSS and JS and the data embedded as JSON, so it opens straight from disk with no server. It shows one card per paper and has:
+
+- a **search box**: every typed word must appear in the title, summary, keywords, category or file name (case-insensitive); clicking a keyword chip searches for it;
+- a **category filter** built from the categories present in the data, combined with the search.
+
+The page is rebuilt from the whole database after each run and written atomically (temporary file, then rename), so Google Drive never syncs a half-written page.
+
+**3. Discord message.** One embed per new paper: title, short summary, category, keywords, file name. See [Discord webhook](#discord-webhook).
+
+Local, not synced: the database and `data/markdown/<name>.md`.
 
 ## Troubleshooting
 
