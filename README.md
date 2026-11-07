@@ -161,7 +161,7 @@ All settings are environment variables, read by `dags/paper_lib/config.py`. Copy
 | `MARKDOWN_DIR` | `data/markdown` | Cache of the Markdown converted from each PDF |
 | `LLM_BASE_URL` | `http://localhost:11434/v1` | OpenAI-compatible endpoint (Ollama; LM Studio uses port 1234) |
 | `LLM_MODEL` | `qwen2.5:7b` | Model name, exactly as shown by `ollama list` |
-| `DISCORD_WEBHOOK_URL` | [empty](https://discord.com/api/webhooks/<id>/<token>) | Webhook for notifications; empty disables them |
+| `DISCORD_WEBHOOK_URL` | `https://discord.com/api/webhooks/<id>/<token>` | Webhook for notifications; empty disables them |
 
 Example for macOS (Google Drive in Mirror mode):
 
