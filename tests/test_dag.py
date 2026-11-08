@@ -59,5 +59,9 @@ def test_dict_results_stay_one_xcom_value(dag):
         assert dag.get_task(task_id).multiple_outputs is False
 
 
+def test_discord_messages_are_sent_one_at_a_time(dag):
+    assert dag.get_task("notify_discord").max_active_tis_per_dagrun == 1
+
+
 def test_page_is_rebuilt_even_if_a_paper_failed(dag):
     assert dag.get_task("render_html").trigger_rule == "all_done"

@@ -83,7 +83,8 @@ def paper_pipeline():
         config.OUTPUT_HTML.parent.mkdir(parents=True, exist_ok=True)
         build_html(get_all_papers(config.DB_PATH), config.OUTPUT_HTML)
 
-    @task
+    # One message at a time: six parallel posts hit Discord's webhook rate limit (HTTP 429).
+    @task(max_active_tis_per_dagrun=1)
     def notify_discord(pdf_path: str) -> None:
         """Send one Discord message for this paper, if it made it into the database."""
         from airflow.sdk.exceptions import AirflowSkipException
