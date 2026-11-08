@@ -89,9 +89,9 @@ Owns `dags/paper_pipeline.py`, `dags/paper_lib/config.py`, the shared repo files
 - [x] The DAG (§6), built and tested on the stubs with `airflow dags test paper_pipeline`: schedule every 5 min, `catchup=False`, `max_active_runs=1`, task retries. Also checked: a run with nothing new skips everything, and a failing paper does not stop the others.
 - [x] Choose 6–8 demo PDFs on different topics; keep 2 aside to upload during the test (8 arXiv papers, one per category, in `data/demo-pdfs/` on the demo machine).
 - [x] As B's and C's modules are merged: end-to-end runs and the integration checklist (§10). Report bugs to the owner in the group chat. B's modules merged and checked on 5 Nov; C's on 8 Nov. The full pipeline passed in a test setup, then on the demo machine on 8 Nov (all of §10). One problem found and fixed in the DAG: parallel Discord posts hit the rate limit.
-- [ ] Take the screenshots of the real run (§9) and upload them to the Prism project. The four used in the report were taken on 8 Nov; uploading them to Prism is next.
+- [x] Take the screenshots of the real run (§9) and upload them to the Prism project. (The four used in the report, uploaded on 8 Nov.)
 - [x] README: Overview and architecture, Setup, Run and test, Troubleshooting (§9).
-- [ ] Report sections 2, 3 and 6 (all three written and compiled with the figures of the real run; to paste into Prism).
+- [x] Report sections 2, 3 and 6 (in the Prism project since 8 Nov).
 - [x] Make the repo public before the report deadline. (Public since 8 Nov.)
 
 ### B: PDF conversion and local LLM (3 pts)
@@ -104,7 +104,7 @@ Owns `dags/paper_lib/pdf_to_md.py`, `dags/paper_lib/llm_metadata.py`, their test
 - [x] Unit tests with a fake LLM client: valid JSON / invalid then valid / invalid twice / missing field.
 - [x] Compare 2 models you can run (quality and seconds per paper) and post your recommendation in the group chat. The demo machine has 8 GB of VRAM, so a 7–8B model works there too.
 - [x] README "LLM setup": installing Ollama, pulling the model, switching to LM Studio.
-- [ ] Report sections 4 (with 1–2 example LLM outputs) and 7 (written in `docs/sections/`, to copy into Prism).
+- [x] Report sections 4 (with 1–2 example LLM outputs) and 7 (in the Prism project since 8 Nov).
 
 ### C: SQLite, HTML page, Discord, report editor (2 pts + editing)
 
