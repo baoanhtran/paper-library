@@ -8,7 +8,7 @@ INFO-H420 Process Modeling, Data Pipelines, and Responsible AI (ULB). Assignment
 | **Deadline** | Monday 9 November 2026 (our internal deadlines: §4) |
 | **Roles** | **A** Airflow, integration, demo machine · **B** PDF conversion + local LLM · **C** SQLite, HTML page, Discord, report editor |
 | **Report** | LaTeX on OpenAI Prism |
-| **Last update** | Thu 5 Nov 2026 (ticked boxes in §5 show what is done) |
+| **Last update** | Sun 8 Nov 2026 (ticked boxes in §5 show what is done) |
 
 ## 1. What we are building
 
@@ -88,7 +88,7 @@ Owns `dags/paper_pipeline.py`, `dags/paper_lib/config.py`, the shared repo files
 - [x] `config.py`: read every setting from environment variables. Load `.env` with `python-dotenv`, so tasks see the settings no matter which terminal started Airflow.
 - [x] The DAG (§6), built and tested on the stubs with `airflow dags test paper_pipeline`: schedule every 5 min, `catchup=False`, `max_active_runs=1`, task retries. Also checked: a run with nothing new skips everything, and a failing paper does not stop the others.
 - [x] Choose 6–8 demo PDFs on different topics; keep 2 aside to upload during the test (8 arXiv papers, one per category, in `data/demo-pdfs/` on the demo machine).
-- [ ] As B's and C's modules are merged: end-to-end runs and the integration checklist (§10). Report bugs to the owner in the group chat. B's modules merged and checked on 5 Nov (8/8 demo PDFs, full DAG run); waiting for C's.
+- [ ] As B's and C's modules are merged: end-to-end runs and the integration checklist (§10). Report bugs to the owner in the group chat. B's modules merged and checked on 5 Nov; C's on 8 Nov. The full pipeline passed in a test setup (new papers, nothing new, one more paper); the real run on the demo machine is next.
 - [ ] Take the screenshots of the real run (§9) and upload them to the Prism project.
 - [x] README: Overview and architecture, Setup, Run and test, Troubleshooting (§9).
 - [ ] Report sections 2, 3 and 6 (2 and 3 drafted and compiled, to paste into Prism once the project exists; 6 after the real run).
