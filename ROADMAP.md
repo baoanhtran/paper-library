@@ -88,10 +88,10 @@ Owns `dags/paper_pipeline.py`, `dags/paper_lib/config.py`, the shared repo files
 - [x] `config.py`: read every setting from environment variables. Load `.env` with `python-dotenv`, so tasks see the settings no matter which terminal started Airflow.
 - [x] The DAG (§6), built and tested on the stubs with `airflow dags test paper_pipeline`: schedule every 5 min, `catchup=False`, `max_active_runs=1`, task retries. Also checked: a run with nothing new skips everything, and a failing paper does not stop the others.
 - [x] Choose 6–8 demo PDFs on different topics; keep 2 aside to upload during the test (8 arXiv papers, one per category, in `data/demo-pdfs/` on the demo machine).
-- [ ] As B's and C's modules are merged: end-to-end runs and the integration checklist (§10). Report bugs to the owner in the group chat. B's modules merged and checked on 5 Nov; C's on 8 Nov. The full pipeline passed in a test setup (new papers, nothing new, one more paper); the real run on the demo machine is next.
-- [ ] Take the screenshots of the real run (§9) and upload them to the Prism project.
+- [x] As B's and C's modules are merged: end-to-end runs and the integration checklist (§10). Report bugs to the owner in the group chat. B's modules merged and checked on 5 Nov; C's on 8 Nov. The full pipeline passed in a test setup, then on the demo machine on 8 Nov (all of §10). One problem found and fixed in the DAG: parallel Discord posts hit the rate limit.
+- [ ] Take the screenshots of the real run (§9) and upload them to the Prism project. Graph view, Grid view and `index.html` taken on 8 Nov; Discord still to take.
 - [x] README: Overview and architecture, Setup, Run and test, Troubleshooting (§9).
-- [ ] Report sections 2, 3 and 6 (2 and 3 drafted and compiled, to paste into Prism once the project exists; 6 after the real run).
+- [ ] Report sections 2, 3 and 6 (all three written and compiled with the figures of the real run; to paste into Prism).
 - [ ] Make the repo public before the report deadline.
 
 ### B: PDF conversion and local LLM (3 pts)
@@ -338,11 +338,11 @@ figures/                       images; prefix file names with your role: a-grid-
 
 **Screenshots of the real run (A, demo machine):**
 
-- [ ] Airflow Graph view (task dependencies)
-- [ ] Grid view: several scheduled runs, including the mapped task group and a run with nothing new
+- [x] Airflow Graph view (task dependencies)
+- [x] Grid view: several scheduled runs, including the mapped task group and a run with nothing new
 - [ ] `ask_llm` log showing the LLM's JSON
 - [ ] Drive folders `ResearchLibrary/papers/` and `output/`
-- [ ] `index.html` from the real run: the full list, a search, a category filter
+- [x] `index.html` from the real run: the full list, a search, a category filter (the report shows a search)
 - [ ] Discord notifications from the real run
 - [ ] Database content (e.g. `SELECT filename, title, category FROM papers;`)
 
@@ -362,13 +362,13 @@ figures/                       images; prefix file names with your role: a-grid-
 
 ## 10. Integration test checklist (A, demo machine)
 
-- [ ] Empty DB and 3–4 PDFs in `papers/` → one run processes all of them: rows in the DB, entries on the page, messages in Discord.
-- [ ] Next scheduled run with nothing new → quick no-op: no duplicates, no Discord message.
-- [ ] Upload one of the kept-aside PDFs on drive.google.com → it syncs to the demo machine and is processed within ~5 minutes. This is the key demo for the report.
-- [ ] Search and category filter work in `index.html` opened from the Drive folder.
-- [ ] Broken or scanned PDF → that paper fails with a clear log; the other papers still go through.
-- [ ] Restart Airflow → nothing is processed twice.
-- [ ] `git log -p | grep -i "discord.com/api/webhooks"` finds nothing.
+- [x] Empty DB and 3–4 PDFs in `papers/` → one run processes all of them: rows in the DB, entries on the page, messages in Discord. (8 Nov: 6 PDFs in the 15:30 run.)
+- [x] Next scheduled run with nothing new → quick no-op: no duplicates, no Discord message. (About 2 s per run.)
+- [x] Upload one of the kept-aside PDFs on drive.google.com → it syncs to the demo machine and is processed within ~5 minutes. This is the key demo for the report. (Synced at 15:37, processed by the 15:40 run.)
+- [x] Search and category filter work in `index.html` opened from the Drive folder.
+- [x] Broken or scanned PDF → that paper fails with a clear log; the other papers still go through. (Test setup, 8 Nov.)
+- [x] Restart Airflow → nothing is processed twice. (Restarted at 16:01; the 16:05 run was a no-op.)
+- [x] `git log --all -p | grep -E "discord(app)?\.com/api/webhooks/[0-9]+"` finds nothing. (The README only shows the `<id>/<token>` placeholder.)
 
 ## 11. Final checklist (C, before uploading)
 
