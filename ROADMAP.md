@@ -92,7 +92,7 @@ Owns `dags/paper_pipeline.py`, `dags/paper_lib/config.py`, the shared repo files
 - [ ] Take the screenshots of the real run (§9) and upload them to the Prism project. The four used in the report were taken on 8 Nov; uploading them to Prism is next.
 - [x] README: Overview and architecture, Setup, Run and test, Troubleshooting (§9).
 - [ ] Report sections 2, 3 and 6 (all three written and compiled with the figures of the real run; to paste into Prism).
-- [ ] Make the repo public before the report deadline.
+- [x] Make the repo public before the report deadline. (Public since 8 Nov.)
 
 ### B: PDF conversion and local LLM (3 pts)
 
@@ -340,11 +340,8 @@ figures/                       images; prefix file names with your role: a-grid-
 
 - [x] Airflow Graph view (task dependencies)
 - [x] Grid view: several scheduled runs, including the mapped task group and a run with nothing new
-- [ ] `ask_llm` log showing the LLM's JSON
-- [ ] Drive folders `ResearchLibrary/papers/` and `output/`
 - [x] `index.html` from the real run: the full list, a search, a category filter (the report shows a search)
 - [x] Discord notifications from the real run
-- [ ] Database content (e.g. `SELECT filename, title, category FROM papers;`)
 
 **README** (graded together with the report). A creates these headings in the skeleton; each owner fills in their own:
 
