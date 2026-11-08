@@ -1,6 +1,6 @@
 # Assignment 3 Roadmap: Research Library Pipeline with Airflow
 
-INFO-H420 Process Modeling, Data Pipelines, and Responsible AI (ULB). Assignment 3: Workflows with Airflow, 10 points.
+INFO-H420 Management of Data Science and Business Workflows (ULB). Assignment 3: Workflows with Airflow, 10 points.
 
 | | |
 |---|---|
