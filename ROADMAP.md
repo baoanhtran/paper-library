@@ -89,7 +89,7 @@ Owns `dags/paper_pipeline.py`, `dags/paper_lib/config.py`, the shared repo files
 - [x] The DAG (§6), built and tested on the stubs with `airflow dags test paper_pipeline`: schedule every 5 min, `catchup=False`, `max_active_runs=1`, task retries. Also checked: a run with nothing new skips everything, and a failing paper does not stop the others.
 - [x] Choose 6–8 demo PDFs on different topics; keep 2 aside to upload during the test (8 arXiv papers, one per category, in `data/demo-pdfs/` on the demo machine).
 - [x] As B's and C's modules are merged: end-to-end runs and the integration checklist (§10). Report bugs to the owner in the group chat. B's modules merged and checked on 5 Nov; C's on 8 Nov. The full pipeline passed in a test setup, then on the demo machine on 8 Nov (all of §10). One problem found and fixed in the DAG: parallel Discord posts hit the rate limit.
-- [ ] Take the screenshots of the real run (§9) and upload them to the Prism project. Graph view, Grid view and `index.html` taken on 8 Nov; Discord still to take.
+- [ ] Take the screenshots of the real run (§9) and upload them to the Prism project. The four used in the report were taken on 8 Nov; uploading them to Prism is next.
 - [x] README: Overview and architecture, Setup, Run and test, Troubleshooting (§9).
 - [ ] Report sections 2, 3 and 6 (all three written and compiled with the figures of the real run; to paste into Prism).
 - [ ] Make the repo public before the report deadline.
@@ -343,7 +343,7 @@ figures/                       images; prefix file names with your role: a-grid-
 - [ ] `ask_llm` log showing the LLM's JSON
 - [ ] Drive folders `ResearchLibrary/papers/` and `output/`
 - [x] `index.html` from the real run: the full list, a search, a category filter (the report shows a search)
-- [ ] Discord notifications from the real run
+- [x] Discord notifications from the real run
 - [ ] Database content (e.g. `SELECT filename, title, category FROM papers;`)
 
 **README** (graded together with the report). A creates these headings in the skeleton; each owner fills in their own:
