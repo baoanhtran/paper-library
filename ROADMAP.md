@@ -116,7 +116,7 @@ Owns `dags/paper_lib/storage.py`, `html_page.py`, `notify.py`, their tests, the 
 - [x] `notify.py`: one message per paper (title, category, keywords, short summary, filename); 10 s timeout; raise on HTTP errors; respect Discord's length limits. Test with your own webhook.
 - [x] README: Discord webhook, Configuration (the settings in §6 as a table), Project structure (§7), Outputs (database, web page, message format).
 - [x] Report sections 1 and 5, with screenshots of your page and a Discord message from your own tests.
-- [ ] After the report deadline: final pass on the report and README for consistency (layout, references, typos; no rewriting of others' content), compile the PDF, run the final checklist (§11), upload to UV.
+- [x] After the report deadline: final pass on the report and README for consistency (layout, references, typos; no rewriting of others' content), compile the PDF, run the final checklist (§11), upload to UV.
 
 ## 6. Interface contract (final)
 
@@ -369,9 +369,9 @@ figures/                       images; prefix file names with your role: a-grid-
 
 ## 11. Final checklist (C, before uploading)
 
-- [ ] The repo is public and opens in a private browser window. README run instructions are complete. No secrets, database or PDFs committed.
-- [ ] Report PDF: short, explains the approach, shows the workflow running, GitHub link on the first page.
-- [ ] Uploaded to UV → "Assignment 3" before Mon 9 Nov 12:00. A and B confirm that it is there.
+- [x] The repo is public and opens in a private browser window. README run instructions are complete. No secrets, database or PDFs committed.
+- [x] Report PDF: short, explains the approach, shows the workflow running, GitHub link on the first page.
+- [x] Uploaded to UV → "Assignment 3" before Mon 9 Nov 12:00. A and B confirm that it is there.
 
 ## 12. Only if we are ahead
 
